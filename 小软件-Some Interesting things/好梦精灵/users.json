@@ -1,0 +1,67 @@
+{
+  "http://172.16.21.80:5000/": {
+    "password_hash": "scrypt:32768:8:1$Ms9QHUTCLx6qjrDw$f6b2c38b1597e8460789da77356d839a34ea35133c6484c0891adda42a1e7f4b67d7255597731d0934199be7c3a07e8a113ede871289ebc24a271eb992ee2e50",
+    "created_at": "2025-08-19T15:11:17.451489",
+    "points": 0,
+    "badges": [],
+    "health_score": 0,
+    "sleep_data": {},
+    "behavior_data": {},
+    "wechat_openid": "mock_openid_1755601514348",
+    "wechat_info": {
+      "openid": "mock_openid_1755601514348",
+      "nickname": "微信用户657",
+      "avatar": "https://via.placeholder.com/64x64/07c160/ffffff?text=微信"
+    }
+  },
+  "admin": {
+    "password_hash": "scrypt:32768:8:1$dhHHfihxHicz8YjN$f1f2c7513aab329b72494fc7f31184024827779655b00298e1c252c709fffa242cc3d32e1ccf7d645678c2e0ef6b5b63871c90ea230f42a03a913108b16e6a94",
+    "created_at": "2025-08-19T15:50:01.709926",
+    "health_score": 60,
+    "sleep_data": {},
+    "behavior_data": {},
+    "is_admin": true,
+    "wechat_openid": "mock_openid_1755602614584",
+    "wechat_info": {
+      "openid": "mock_openid_1755602614584",
+      "nickname": "微信用户417",
+      "avatar": "https://via.placeholder.com/64x64/07c160/ffffff?text=微信"
+    }
+  },
+  "": {
+    "password_hash": "scrypt:32768:8:1$YzMtsU553pk6fHK7$eaf4b7e60d31fbed8761be5ce574abe43dd258437bb127d7935646ff9fd310ad6b49cc5945360331938f787c606a59212f600a087212821c54f18f12f2692a9a",
+    "created_at": "2025-08-19T16:11:13.578779",
+    "health_score": 0,
+    "sleep_data": {},
+    "behavior_data": {},
+    "is_admin": false
+  },
+  "Test": {
+    "password_hash": "scrypt:32768:8:1$FUOrOhgVZ3gXdsQN$1eb68b38b21281095426eefc00fc6f43b36adc3ea4ae1377d380d617434abf1dd810d8f76b97cff633e9c8d53c9157d757f9067342757d74cd63a0be3eaf1cd6",
+    "created_at": "2025-08-19T16:11:21.904699",
+    "health_score": 10,
+    "sleep_data": {},
+    "behavior_data": {},
+    "is_admin": false,
+    "wechat_openid": "mock_openid_1755597643593",
+    "wechat_info": {
+      "openid": "mock_openid_1755597643593",
+      "nickname": "微信用户979",
+      "avatar": "https://via.placeholder.com/64x64/07c160/ffffff?text=微信"
+    }
+  },
+  "Test1": {
+    "password_hash": "scrypt:32768:8:1$1QjOCKAdNjeIJLqZ$5ebb3a853656c40ead02e15d01bc8e184fb4b31cbde956825c273969e27f51e3b14932170a77f854794e804f43e4cfb29028b94624d0139e02f2f17252fcfa87",
+    "created_at": "2025-08-19T16:20:59.278122",
+    "health_score": 20,
+    "sleep_data": {},
+    "behavior_data": {},
+    "is_admin": false,
+    "wechat_openid": "mock_openid_1755602064903",
+    "wechat_info": {
+      "openid": "mock_openid_1755602064903",
+      "nickname": "微信用户896",
+      "avatar": "https://via.placeholder.com/64x64/07c160/ffffff?text=微信"
+    }
+  }
+}

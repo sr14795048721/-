@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好梦精灵 - 健康聊天室</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <style>
+        .chat-container {
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .online-count {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+        .messages-area {
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+        }
+        .message {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+        .username {
+            font-weight: bold;
+            color: #667eea;
+        }
+        .message-content {
+            color: #333;
+        }
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+        .message-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .send-btn {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .send-btn:hover {
+            background: #5a6fd8;
+        }
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌙 好梦精灵 - 健康聊天室</h1>
+        </header>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <div>
+                    <h3>💬 健康交流聊天室</h3>
+                    <p>分享健康生活经验，互相鼓励</p>
+                </div>
+                <div>
+                    <div class="online-count">在线: <span id="onlineCount">0</span>人</div>
+                    <a href="/" class="back-btn">返回首页</a>
+                </div>
+            </div>
+
+            <div class="messages-area" id="messagesArea">
+                <!-- 消息将在这里显示 -->
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="usernameInput" placeholder="输入您的昵称" style="width: 120px;">
+                <input type="text" id="messageInput" class="message-input" placeholder="输入消息...">
+                <button id="sendBtn" class="send-btn">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = '';
+        let lastMessageId = 0;
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMessages();
+            setInterval(loadMessages, 2000); // 每2秒刷新消息
+            setInterval(updateOnlineCount, 5000); // 每5秒更新在线人数
+            
+            // 绑定事件
+            document.getElementById('sendBtn').addEventListener('click', sendMessage);
+            document.getElementById('messageInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+
+        // 发送消息
+        function sendMessage() {
+            const usernameInput = document.getElementById('usernameInput');
+            const messageInput = document.getElementById('messageInput');
+            
+            const username = usernameInput.value.trim();
+            const message = messageInput.value.trim();
+            
+            if (!username) {
+                alert('请输入昵称');
+                return;
+            }
+            
+            if (!message) {
+                alert('请输入消息内容');
+                return;
+            }
+            
+            currentUser = username;
+            
+            fetch('/chat/send', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    username: username,
+                    message: message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    messageInput.value = '';
+                    loadMessages();
+                }
+            })
+            .catch(error => {
+                console.error('发送消息失败:', error);
+            });
+        }
+
+        // 加载消息
+        function loadMessages() {
+            fetch('/chat/messages')
+                .then(response => response.json())
+                .then(data => {
+                    const messagesArea = document.getElementById('messagesArea');
+                    const messages = data.messages || [];
+                    
+                    if (messages.length > 0 && messages[messages.length - 1].id > lastMessageId) {
+                        messagesArea.innerHTML = '';
+                        messages.forEach(msg => {
+                            const messageDiv = document.createElement('div');
+                            messageDiv.className = 'message';
+                            messageDiv.innerHTML = `
+                                <div class="message-header">
+                                    <span class="username">${msg.username}</span>
+                                    <span class="timestamp">${formatTime(msg.timestamp)}</span>
+                                </div>
+                                <div class="message-content">${msg.message}</div>
+                            `;
+                            messagesArea.appendChild(messageDiv);
+                        });
+                        
+                        // 滚动到底部
+                        messagesArea.scrollTop = messagesArea.scrollHeight;
+                        
+                        if (messages.length > 0) {
+                            lastMessageId = messages[messages.length - 1].id;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('加载消息失败:', error);
+                });
+        }
+
+        // 更新在线人数
+        function updateOnlineCount() {
+            if (currentUser) {
+                // 更新用户在线状态
+                fetch('/chat/join', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: currentUser
+                    })
+                });
+            }
+            
+            // 获取在线人数
+            fetch('/chat/online')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('onlineCount').textContent = data.count || 0;
+                })
+                .catch(error => {
+                    console.error('获取在线人数失败:', error);
+                });
+        }
+
+        // 格式化时间
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString('zh-CN', {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // 页面关闭时离开聊天室
+        window.addEventListener('beforeunload', function() {
+            if (currentUser) {
+                navigator.sendBeacon('/chat/leave', JSON.stringify({
+                    username: currentUser
+                }));
+            }
+        });
+    </script>
+</body>
+</html>

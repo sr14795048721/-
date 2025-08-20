@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔧 管理员面板 - 好梦精灵</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 管理员面板</h1>
+            <p>📈 好梦精灵系统管理 📈</p>
+            <div class="user-info">
+                <span id="admin-user">👤 管理员</span>
+                <button onclick="location.href='/'" class="btn-secondary">🏠 返回主页</button>
+            </div>
+        </header>
+
+        <main>
+            <div class="admin-panel">
+                <div class="admin-section">
+                    <h2>👥 用户管理</h2>
+                    <div id="users-list" class="users-container">
+                        <p>正在加载用户列表...</p>
+                    </div>
+                    <button id="clear-data-btn" class="btn-danger">🗑️ 清除所有用户数据</button>
+                    <button id="reset-leaderboard-btn" class="btn-warning">🔄 重置排行榜</button>
+                </div>
+
+                <div class="admin-section">
+                    <h2>📈 系统统计</h2>
+                    <div id="system-stats" class="stats-container">
+                        <div class="stat-item">
+                            <span class="stat-label">总用户数:</span>
+                            <span id="total-users">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">在线用户:</span>
+                            <span id="online-users">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">活跃用户:</span>
+                            <span id="active-users">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">平均健康分数:</span>
+                            <span id="avg-score">0</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <h2>💚 微信统计</h2>
+                    <div id="wechat-stats" class="stats-container">
+                        <div class="stat-item">
+                            <span class="stat-label">微信绑定用户:</span>
+                            <span id="wechat-users">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">绑定率:</span>
+                            <span id="bind-rate">0%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="admin-section">
+                    <h2>📄 数据导出</h2>
+                    <button id="export-data-btn" class="btn-primary">💾 导出用户数据</button>
+                    <div id="export-result"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="/static/admin.js"></script>
+</body>
+</html>

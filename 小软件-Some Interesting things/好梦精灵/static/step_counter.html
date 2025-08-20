@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📱 步数记录器 - 好梦精灵</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📱 步数记录器</h1>
+            <p>👣 记录您的每日步数 👣</p>
+        </header>
+        
+        <main>
+            <div class="dashboard">
+                <div class="step-counter-main">
+                    <div class="counter" id="stepCounter">0</div>
+    <div>
+        <button onclick="addSteps(100)">+100步</button>
+        <button onclick="addSteps(500)">+500步</button>
+        <button onclick="addSteps(1000)">+1000步</button>
+    </div>
+    <div>
+        <button onclick="resetSteps()">重置</button>
+        <button onclick="goBack()">返回主页</button>
+    </div>
+    
+                    <div class="step-info">
+                        <p><strong>🎯 今日目标:</strong> 10,000步</p>
+                        <p><strong>📈 完成度:</strong> <span id="progress">0%</span></p>
+                        <div class="progress-bar">
+                            <div id="progressBar" class="progress-fill"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>🌙 &copy; 2025 好梦精灵 - 您的健康生活助手 🌙</p>
+        </footer>
+    </div>
+
+    <script>
+        function updateDisplay() {
+            const steps = ClientDeviceDetector.getStepCount();
+            document.getElementById('stepCounter').textContent = steps.toLocaleString();
+            
+            const progress = Math.min(100, (steps / 10000) * 100);
+            document.getElementById('progress').textContent = progress.toFixed(1) + '%';
+            document.getElementById('progressBar').style.width = progress + '%';
+        }
+
+        function addSteps(count) {
+            const currentSteps = ClientDeviceDetector.getStepCount();
+            ClientDeviceDetector.updateSteps(currentSteps + count);
+            updateDisplay();
+        }
+
+        function resetSteps() {
+            if (confirm('确定要重置今日步数吗？')) {
+                ClientDeviceDetector.updateSteps(0);
+                updateDisplay();
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/';
+        }
+
+        // 初始化显示
+        document.addEventListener('DOMContentLoaded', updateDisplay);
+    </script>
+    <script src="/static/device_detector.js"></script>
+</body>
+</html>

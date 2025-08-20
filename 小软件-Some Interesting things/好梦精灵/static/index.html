@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌙 好梦精灵 - 健康生活助手</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🌙 好梦精灵</h1>
+            <p>✨ 您的健康生活助手 ✨</p>
+            <div class="user-info">
+                <span id="current-user">👤 未登录</span>
+                <button id="admin-btn" style="display:none" onclick="location.href='/admin'">🔧 管理面板</button>
+                <button id="login-btn">🔑 登录</button>
+                <button id="register-btn">🎆 注册</button>
+                <button id="logout-btn" style="display:none">🚪 退出</button>
+            </div>
+        </header>
+        
+        <div id="auth-modal" class="modal" style="display:none">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2 id="modal-title">🔑 登录</h2>
+                <input type="text" id="username" placeholder="👤 输入用户名">
+                <input type="password" id="password" placeholder="🔒 输入密码">
+                <button id="auth-submit">✨ 登录</button>
+            </div>
+        </div>
+
+        <main>
+            <section class="dashboard">
+                <div class="system-info">
+                    <h2>💻 系统信息</h2>
+                    <div id="system-info-content">
+                        <p>🔄 正在加载系统信息...</p>
+                    </div>
+                </div>
+
+                <div id="user-content" style="display:none">
+                    <div class="sleep-analysis">
+                        <h2>🌙 睡眠分析</h2>
+                        <div id="sleep_pattern" class="pattern-info">
+                            <p>🔍 正在检测睡眠模式...</p>
+                        </div>
+                        <div class="form-group">
+                            <label>💤 睡眠时长 (小时):</label>
+                            <input type="number" id="sleep_hours" step="0.5" min="0" max="24" value="8" placeholder="输入睡眠时长">
+                        </div>
+                        <div class="form-group">
+                            <label>🕙 入睡时间:</label>
+                            <input type="time" id="bedtime" value="22:30">
+                        </div>
+                        <button id="analyze_sleep">✨ 开始分析</button>
+                        <div id="sleep_result" class="result"></div>
+                    </div>
+
+                    <div class="behavior-analysis">
+                        <h2>🏃♂️ 行为分析</h2>
+                        <div class="form-group">
+                            <label>🏋️♀️ 运动时长 (分钟):</label>
+                            <input type="number" id="exercise" min="0" max="1440" value="30" placeholder="输入运动时长">
+                        </div>
+                        <div class="form-group">
+                            <a href="/step-counter" target="_blank" class="step-counter-link">📱 记录步数</a>
+                            <button id="bind-wechat-btn" class="wechat-btn">💚 绑定微信</button>
+                        </div>
+                        <div id="wechat-status" class="wechat-status"></div>
+                        <button id="analyze_behavior">📊 开始分析</button>
+                        <div id="behavior_result" class="result"></div>
+                    </div>
+
+                    <div class="health-score">
+                        <h2>🏆 健康评分</h2>
+                        <div class="score-display">
+                            <p>✨ 累计分数: <span id="health_score">0</span></p>
+                            <div class="progress-bar">
+                                <div id="score_bar" class="progress-fill"></div>
+                            </div>
+                            <small>🎯 目标: 100分</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="login-prompt" class="login-prompt">
+                    <h2>🌟 欢迎使用好梦精灵</h2>
+                    <p>🔑 请登录以查看您的健康数据和睡眠分析</p>
+                    <button onclick="showAuthModal('login')">✨ 立即登录</button>
+                    <button onclick="showAuthModal('register')">🎆 注册账号</button>
+                </div>
+
+                <div class="leaderboard">
+                    <h2>🏆 健康排行榜</h2>
+                    <div id="leaderboard-content">
+                        <p>正在加载...</p>
+                    </div>
+                </div>
+
+                <div class="visualization">
+                    <h2>数据可视化</h2>
+                    <div class="chart-container">
+                        <img id="sleep-chart" style="display:none" alt="睡眠趋势图">
+                        <img id="behavior-chart" style="display:none" alt="行为分析图">
+                        <img id="leaderboard-chart" style="display:none" alt="排行榜图">
+                    </div>
+                    <div class="chart-controls">
+                        <button onclick="loadChart('sleep')">🌙 睡眠趋势</button>
+                        <button onclick="loadChart('behavior')">🏃♂️ 行为分析</button>
+                        <button onclick="loadChart('leaderboard')">🏅 排行榜</button>
+                    </div>
+                </div>
+
+                <div class="chat-section">
+                    <h2>💬 健康聊天室</h2>
+                    <p>与其他用户交流健康经验，互相鼓励</p>
+                    <a href="/chat" class="chat-btn">🚀 进入聊天室</a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>🌙 &copy; 2025 好梦精灵 - 您的健康生活助手 🌙</p>
+            <p style="margin-top: 10px; font-size: 12px; opacity: 0.1;">有黑幕</p>
+        </footer>
+    </div>
+    
+
+    
+    <audio id="bgMusic" loop preload="auto" controls style="display:none">
+        <source src="data:audio/mpeg;base64,SUQzBAAAAAAAI1RTU0UAAAAPAAADTGF2ZjU4Ljc2LjEwMAAAAAAAAAAAAAAA//tQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAAEAAABIADAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDV1dXV1dXV1dXV1dXV1dXV1dXV1dXV1dXV6urq6urq6urq6urq6urq6urq6urq6urq6v////////////////////////////////8AAAAATGF2YzU4LjEzAAAAAAAAAAAAAAAAJAAAAAAAAAAAASDs90hvAAAAAAAAAAAAAAAAAAAA//tQxAADwAABpAAAACAAADSAAAAETEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVQ==" type="audio/mpeg">
+    </audio>
+    
+    <div class="audio-notice" id="audioNotice">
+        <div class="notice-content">
+            <span class="notice-icon">🎵</span>
+            <span class="notice-text">点击任意位置启用背景音乐</span>
+            <button class="notice-close" onclick="hideAudioNotice()">&times;</button>
+        </div>
+    </div>
+    
+    <div class="music-control">
+        <button id="musicToggle" class="music-btn">🎵</button>
+    </div>
+
+    <script src="/static/device_detector.js"></script>
+    <script src="/static/wechat.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>

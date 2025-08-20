@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>好梦精灵 - 健康生活助手</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- 添加背景音乐 -->
+    <audio id="bgMusic" autoplay loop>
+        <source src="/bgSound/relaxing.mp3" type="audio/mpeg">
+        您的浏览器不支持音频元素。
+    </audio>
+
+    <div class="container">
+        <header>
+            <h1>🌙 好梦精灵</h1>
+            <p>您的健康生活助手</p>
+        </header>
+
+        <main>
+            <section class="dashboard">
+                <div class="user-info">
+                    <h2>用户信息</h2>
+                    <div class="info-item">
+                        <label>用户ID:</label>
+                        <input type="text" id="user_id" value="user_001">
+                    </div>
+                </div>
+
+                <div class="sleep-analysis">
+                    <h2>睡眠分析</h2>
+                    <div class="form-group">
+                        <label>睡眠时长 (小时):</label>
+                        <input type="number" id="sleep_hours" step="0.5" min="0" max="24" value="8">
+                    </div>
+                    <div class="form-group">
+                        <label>入睡时间:</label>
+                        <input type="time" id="bedtime" value="22:30">
+                    </div>
+                    <button id="analyze_sleep">分析睡眠</button>
+                    <div id="sleep_result" class="result"></div>
+                </div>
+
+                <div class="behavior-analysis">
+                    <h2>行为分析</h2>
+                    <div class="form-group">
+                        <label>屏幕使用时间 (小时):</label>
+                        <input type="number" id="screen_time" step="0.5" min="0" max="24" value="2">
+                    </div>
+                    <div class="form-group">
+                        <label>运动时长 (分钟):</label>
+                        <input type="number" id="exercise" min="0" max="1440" value="30">
+                    </div>
+                    <div class="form-group">
+                        <label>入睡时间 (24小时制):</label>
+                        <input type="number" id="bedtime_hour" min="0" max="23" value="22">
+                    </div>
+                    <button id="analyze_behavior">分析行为</button>
+                    <div id="behavior_result" class="result"></div>
+                </div>
+
+                <div class="gamification">
+                    <h2>健康积分</h2>
+                    <div class="points-display">
+                        <p>当前积分: <span id="points">0</span></p>
+                        <div class="progress-bar">
+                            <div id="points_bar" class="progress-fill"></div>
+                        </div>
+                    </div>
+                    <div class="achievements">
+                        <h3>成就徽章</h3>
+                        <div id="badges" class="badges-container">
+                            <!-- 徽章将在这里显示 -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="visualization">
+                    <h2>数据可视化</h2>
+                    <canvas id="sleepChart" width="400" height="200"></canvas>
+                </div>
+
+                <div class="chat-section">
+                    <h2>💬 健康聊天室</h2>
+                    <p>与其他用户交流健康经验，互相鼓励</p>
+                    <a href="/chat" class="chat-btn">进入聊天室</a>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 好梦精灵 - 您的健康生活助手</p>
+        </footer>
+    </div>
+
+    <script>
+        // 页面加载完成后尝试播放音乐
+        document.addEventListener('DOMContentLoaded', function() {
+            const bgMusic = document.getElementById('bgMusic');
+            // 设置默认音量
+            bgMusic.volume = 0.3;
+            
+            // 尝试播放音乐（某些浏览器可能需要用户交互才能自动播放）
+            bgMusic.play().catch(function(error) {
+                console.log("自动播放被阻止，需要用户交互: ", error);
+            });
+        });
+    </script>
+
+    <script src="/static/script.js"></script>
+</body>
+</html>
