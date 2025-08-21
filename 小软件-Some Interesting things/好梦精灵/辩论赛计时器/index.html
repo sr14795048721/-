@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>辩论赛计时器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="controls controls-left">
+                <button id="settingsBtn">⚙️ 设置</button>
+            </div>
+            <h1>🎯 辩论赛计时器</h1>
+            <div class="controls controls-right">
+                <button id="templatesBtn">📁 模板</button>
+            </div>
+        </div>
+
+        <div class="teams">
+            <div class="team team-left">
+                <div class="team-logo">
+                    <img id="leftLogo" src="" alt="正方队徽">
+                    <input type="file" id="leftLogoInput" accept="image/*" style="display: none;">
+                    <button class="upload-btn" onclick="document.getElementById('leftLogoInput').click()">📷 上传队徽</button>
+                    <button class="reset-logo-btn" onclick="debateTimer.resetLogo('left')" style="display: none;">🗑️ 重置</button>
+                </div>
+                <div class="team-name" contenteditable="true" id="leftTeamName">正方</div>
+            </div>
+            
+            <div class="timer-section">
+                <div class="current-phase" id="currentPhase">准备阶段</div>
+                <div class="timer-display" id="timerDisplay">05:00</div>
+                <div class="countdown-overlay" id="countdownOverlay" style="display: none;">
+                    <div class="countdown-number" id="countdownNumber">10</div>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="timer-controls">
+                    <button id="startBtn">开始</button>
+                    <button id="pauseBtn">暂停</button>
+                    <button id="resetBtn">重置</button>
+                    <button id="nextBtn">下一阶段</button>
+                </div>
+            </div>
+
+            <div class="team team-right">
+                <div class="team-logo">
+                    <img id="rightLogo" src="" alt="反方队徽">
+                    <input type="file" id="rightLogoInput" accept="image/*" style="display: none;">
+                    <button class="upload-btn" onclick="document.getElementById('rightLogoInput').click()">📷 上传队徽</button>
+                    <button class="reset-logo-btn" onclick="debateTimer.resetLogo('right')" style="display: none;">🗑️ 重置</button>
+                </div>
+                <div class="team-name" contenteditable="true" id="rightTeamName">反方</div>
+            </div>
+        </div>
+
+        <div class="phases-list" id="phasesList"></div>
+    </div>
+
+    <!-- 设置模态框 -->
+    <div id="settingsModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>计时设置</h2>
+            <div class="settings-form">
+                <div class="form-group">
+                    <label>背景颜色:</label>
+                    <input type="color" id="bgColor" value="#1a1a2e">
+                </div>
+                <div class="form-group">
+                    <label>文字颜色:</label>
+                    <input type="color" id="textColor" value="#ffffff">
+                </div>
+                <div class="form-group">
+                    <label>提示音量:</label>
+                    <div class="volume-control">
+                        <input type="range" id="volumeSlider" min="0" max="100" value="50">
+                        <span id="volumeValue">50%</span>
+                        <button type="button" id="previewSoundBtn" class="preview-btn">🔊 预览</button>
+                    </div>
+                </div>
+                <div class="phases-config">
+                    <h3>阶段设置</h3>
+                    <div id="phasesConfig"></div>
+                    <button id="addPhaseBtn">添加阶段</button>
+                </div>
+                <div class="form-actions">
+                    <button id="saveSettingsBtn">保存设置</button>
+                    <button id="cancelSettingsBtn">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模板模态框 -->
+    <div id="templatesModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>模板管理</h2>
+            <div class="template-form">
+                <div class="form-group">
+                    <label>模板名称:</label>
+                    <input type="text" id="templateName" placeholder="输入模板名称">
+                </div>
+                <button id="saveTemplateBtn">保存当前设置为模板</button>
+                <div class="templates-list">
+                    <h3>已保存模板</h3>
+                    <div id="templatesList"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
