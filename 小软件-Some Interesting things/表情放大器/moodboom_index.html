@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表情放大器·MoodBoom!</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: background 1s ease;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            z-index: 10;
+            position: relative;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .api-section {
+            background: rgba(255,255,255,0.1);
+            padding: 1rem;
+            border-radius: 15px;
+            margin-bottom: 1rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .api-input {
+            padding: 0.5rem;
+            margin: 0.25rem;
+            border: none;
+            border-radius: 10px;
+            width: 200px;
+            font-size: 0.9rem;
+        }
+
+        .api-status {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .status-success { color: #4CAF50; }
+        .status-error { color: #f44336; }
+        .status-testing { color: #ff9800; }
+
+        #textInput {
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 25px;
+            outline: none;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #submitBtn {
+            padding: 1rem 2rem;
+            font-size: 1.1rem;
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        #submitBtn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        #moodDisplay {
+            color: white;
+            font-size: 1.2rem;
+            margin-top: 1rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        #emojiContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        .emoji {
+            position: absolute;
+            font-size: 3rem;
+            animation: emojiFloat 3s ease-out forwards;
+        }
+
+        @keyframes emojiFloat {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 1;
+            }
+            50% {
+                transform: translateY(50vh) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-20vh) scale(0.5);
+                opacity: 0;
+            }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            #textInput {
+                width: 280px;
+                font-size: 1rem;
+            }
+            
+            .emoji {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            #textInput {
+                width: 250px;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+
+        /* 情绪背景色 */
+        .happy { background: linear-gradient(135deg, #ffd89b, #19547b) !important; }
+        .calm { background: linear-gradient(135deg, #667eea, #764ba2) !important; }
+        .sad { background: linear-gradient(135deg, #bdc3c7, #2c3e50) !important; }
+        .angry { background: linear-gradient(135deg, #ff416c, #ff4b2b) !important; }
+        .surprised { background: linear-gradient(135deg, #a8edea, #fed6e3) !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>表情放大器·MoodBoom!</h1>
+        
+        <div class="api-section">
+            <div style="color: white; margin-bottom: 0.5rem;">API配置</div>
+            <input type="password" id="apiKey" class="api-input" placeholder="API Key" value="">
+            <input type="text" id="baseUrl" class="api-input" placeholder="Base URL" value="https://api.deepseek.com/v1">
+            <input type="text" id="model" class="api-input" placeholder="Model" value="deepseek-chat">
+            <button id="testApiBtn" style="padding: 0.5rem 1rem; margin: 0.25rem; border: none; border-radius: 10px; cursor: pointer; background: #4CAF50; color: white;">测试连接</button>
+            <div id="apiStatus" class="api-status">API状态：未测试</div>
+        </div>
+        
+        <div class="input-section">
+            <input type="text" id="textInput" placeholder="输入你的心情文字...">
+            <button id="submitBtn">提交</button>
+        </div>
+        <div id="moodDisplay">检测到的情绪：未检测</div>
+    </div>
+    <div id="emojiContainer"></div>
+
+    <script>
+        // 情绪词典
+        const moodDict = {
+            happy: {
+                keywords: ['开心', '快乐', '高兴', '兴奋', '愉快', '欢乐', '喜悦', '幸福', '满足', '棒', '好', '爱'],
+                emojis: ['😊', '😄', '🥳', '😍', '🤗', '💖', '🌟', '🎉', '👏', '💕'],
+                name: '开心'
+            },
+            calm: {
+                keywords: ['平静', '安宁', '放松', '舒适', '宁静', '淡定', '冷静', '安静', '祥和', '温和'],
+                emojis: ['😌', '🧘', '🌊', '🕊️', '🌸', '🍃', '☁️', '🌙', '💙', '🤍'],
+                name: '平静'
+            },
+            sad: {
+                keywords: ['伤心', '难过', '悲伤', '沮丧', '失落', '痛苦', '哭', '忧郁', '孤独', '绝望'],
+                emojis: ['😢', '😭', '💔', '😞', '😔', '🌧️', '⛈️', '🥀', '💧', '😿'],
+                name: '伤心'
+            },
+            angry: {
+                keywords: ['愤怒', '生气', '恼火', '暴躁', '愤慨', '怒', '火大', '烦躁', '讨厌', '恨'],
+                emojis: ['😠', '😡', '🤬', '💢', '🔥', '⚡', '👿', '😤', '💥', '🌋'],
+                name: '愤怒'
+            },
+            surprised: {
+                keywords: ['惊讶', '震惊', '意外', '吃惊', '惊奇', '不敢相信', '哇', '天哪', '惊呆'],
+                emojis: ['😲', '😱', '🤯', '😮', '🙀', '✨', '💫', '🎆', '🌠', '⭐'],
+                name: '惊讶'
+            }
+        };
+
+        const textInput = document.getElementById('textInput');
+        const submitBtn = document.getElementById('submitBtn');
+        const moodDisplay = document.getElementById('moodDisplay');
+        const emojiContainer = document.getElementById('emojiContainer');
+        const body = document.body;
+        const apiKeyInput = document.getElementById('apiKey');
+        const baseUrlInput = document.getElementById('baseUrl');
+        const modelInput = document.getElementById('model');
+        const testApiBtn = document.getElementById('testApiBtn');
+        const apiStatus = document.getElementById('apiStatus');
+
+        async function testApiConnection() {
+            const apiKey = apiKeyInput.value.trim();
+            const baseUrl = baseUrlInput.value.trim();
+            const model = modelInput.value.trim();
+            
+            if (!apiKey || !baseUrl || !model) {
+                apiStatus.textContent = 'API状态：请填写完整配置';
+                apiStatus.className = 'api-status status-error';
+                return false;
+            }
+            
+            apiStatus.textContent = 'API状态：测试中...';
+            apiStatus.className = 'api-status status-testing';
+            
+            try {
+                const response = await fetch(`${baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: 'user', content: '测试' }],
+                        max_tokens: 10
+                    })
+                });
+                
+                if (response.ok) {
+                    apiStatus.textContent = 'API状态：连接成功';
+                    apiStatus.className = 'api-status status-success';
+                    return true;
+                } else {
+                    apiStatus.textContent = `API状态：连接失败 (${response.status})`;
+                    apiStatus.className = 'api-status status-error';
+                    return false;
+                }
+            } catch (error) {
+                apiStatus.textContent = `API状态：连接错误 - ${error.message}`;
+                apiStatus.className = 'api-status status-error';
+                return false;
+            }
+        }
+
+        async function detectMoodWithLLM(text) {
+            const apiKey = apiKeyInput.value.trim();
+            const baseUrl = baseUrlInput.value.trim();
+            const model = modelInput.value.trim();
+            
+            if (!apiKey || !baseUrl || !model) {
+                throw new Error('请先配置并测试API连接');
+            }
+            
+            const prompt = `请分析以下文本的情感，只返回以下五个选项之一：happy、calm、sad、angry、surprised\n\n文本："${text}"`;
+            
+            try {
+                const response = await fetch(`${baseUrl}/chat/completions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: [{ role: 'user', content: prompt }],
+                        max_tokens: 50,
+                        temperature: 0.3
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API请求失败: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                const result = data.choices[0].message.content.trim().toLowerCase();
+                
+                // 验证返回的情绪是否有效
+                const validMoods = ['happy', 'calm', 'sad', 'angry', 'surprised'];
+                for (const mood of validMoods) {
+                    if (result.includes(mood)) {
+                        return mood;
+                    }
+                }
+                
+                return 'calm'; // 默认情绪
+            } catch (error) {
+                console.error('情感分析失败:', error);
+                throw error;
+            }
+        }
+
+        function createEmojiExplosion(mood) {
+            const emojis = moodDict[mood].emojis;
+            const emojiCount = 30;
+            
+            // 清除之前的emoji
+            emojiContainer.innerHTML = '';
+            
+            for (let i = 0; i < emojiCount; i++) {
+                setTimeout(() => {
+                    const emoji = document.createElement('div');
+                    emoji.className = 'emoji';
+                    emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                    
+                    // 随机位置（从左右两边喷发）
+                    const side = Math.random() > 0.5 ? 'left' : 'right';
+                    emoji.style[side] = Math.random() * 20 + '%';
+                    emoji.style.bottom = '0px';
+                    
+                    // 随机延迟和动画时间
+                    emoji.style.animationDelay = Math.random() * 0.5 + 's';
+                    emoji.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                    
+                    emojiContainer.appendChild(emoji);
+                    
+                    // 3秒后移除emoji
+                    setTimeout(() => {
+                        if (emoji.parentNode) {
+                            emoji.parentNode.removeChild(emoji);
+                        }
+                    }, 3000);
+                }, i * 50);
+            }
+        }
+
+        async function handleSubmit() {
+            const text = textInput.value.trim();
+            
+            if (!text) {
+                alert('请输入一些内容');
+                return;
+            }
+            
+            // 显示加载状态
+            moodDisplay.textContent = '正在分析情绪...';
+            submitBtn.disabled = true;
+            submitBtn.textContent = '分析中...';
+            
+            try {
+                const mood = await detectMoodWithLLM(text);
+                const moodName = moodDict[mood].name;
+                
+                // 更新情绪显示
+                moodDisplay.textContent = `检测到的情绪：${moodName}`;
+                
+                // 更改背景色
+                body.className = mood;
+                
+                // 创建emoji爆炸效果
+                createEmojiExplosion(mood);
+            } catch (error) {
+                moodDisplay.textContent = `情绪分析失败：${error.message}`;
+                alert(`错误：${error.message}`);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = '提交';
+            }
+        }
+
+        // 事件监听
+        submitBtn.addEventListener('click', handleSubmit);
+        textInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSubmit();
+            }
+        });
+        testApiBtn.addEventListener('click', testApiConnection);
+    </script>
+</body>
+</html>
